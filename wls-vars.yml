@@ -1,0 +1,21 @@
+# Common paths and names
+middleware_data: '{{ data_dir }}/wls'
+middleware_home: '{{ base_dir }}/wls'
+middleware_common_home: '{{ middleware_home }}/oracle_common'
+domains_home: '{{ middleware_data }}/domains'
+applications_home: '{{ middleware_data }}/applications'
+mw_installer_folder: '{{ stage_dir }}'
+jdk_home: '{{ base_dir }}/jdk'
+java_home: '{{ jdk_home }}/latest'
+domain_home: '{{ domains_home }}/{{ domain_name }}'
+nodemanager_home: '{{ domain_home }}/nodemanager'
+node_manager_listen_address: 'localhost'
+weblogic_home: '{{ middleware_home }}/wlserver'
+nodemanager_username: 'weblogic'
+weblogic_admin: 'weblogic'
+admin_server_name: 'AdminServer'
+server_hostname: '{{ ansible_fqdn }}'
+
+# WLS Properties
+min_java_heap_size: '-Xms1024m'
+max_java_heap_size: '-Xms1024m'

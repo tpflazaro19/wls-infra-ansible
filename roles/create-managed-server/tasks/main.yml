@@ -1,0 +1,45 @@
+#===============================================================================
+# Tasks for FMW Managed server 12.2.1
+# Create and configure managed server
+# Author: Timothy Lazaro
+#===============================================================================
+
+# Add Machine
+# -----------
+- name: Add machine
+  template: src=add-machine.py dest={{ stage_dir }} owner={{ app_user }} group={{ app_group }}
+- name: Execute add machine script
+  become_user: '{{ app_user }}'
+  shell: "{{ middleware_common_home }}/common/bin/wlst.sh {{ stage_dir }}/add-machine.py"
+
+# Create managed server
+# ---------------------
+- name: Copy create managed server script
+  template: src=create-ms.py dest={{ stage_dir }}
+  tags: ms
+- name: Execute create managed server script
+  shell: '{{ middleware_common_home }}/common/bin/wlst.sh {{ stage_dir }}/create-ms.py'
+  tags: ms
+    
+# Start managed server
+# --------------------
+- name: Create security folder for managed server
+  file: state=directory path={{ domains_home }}/{{ domain_name }}/servers/{{ managed_server_name }}/security
+  tags: ms
+- name: Create boot properties file for managed server
+  template: src=boot.properties dest={{ domain_home }}/servers/{{ managed_server_name }}/security/
+  tags: ms
+- name: Copy Start Managed Server Script
+  template: src=start-ms.py dest={{ stage_dir }}
+  tags: ms
+- name: Start Managed Server
+  shell: "{{ weblogic_home }}/common/bin/wlst.sh {{ stage_dir }}/start-ms.py"
+  tags: ms
+- name: Wait for Managed Server to startup 
+  wait_for: port={{ managed_server_port }} delay=2 timeout=300
+  tags: ms
+- name: Remove stage directory
+  file:
+    path: '{{ stage_dir }}'
+    state: absent
+  become_user: root

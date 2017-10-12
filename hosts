@@ -1,0 +1,4 @@
+wls ansible_connection=docker
+
+[weblogic]
+172.31.5.139 ansible_user=ec2-user

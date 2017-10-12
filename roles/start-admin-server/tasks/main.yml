@@ -1,0 +1,17 @@
+#==================================================
+# Role for starting AdminServer for the first time
+# WebLogic 12c R2 Domain
+# Author: Timothy Lazaro
+#==================================================
+
+- name: Create security folder on Admin Server
+  file: state=directory path={{ domains_home }}/{{ domain_name }}/servers/{{ admin_server_name }}/security owner={{ app_user }} group={{ app_group }}
+- name: Create boot.properties file
+  template: src=boot.properties dest={{ domains_home }}/{{ domain_name }}/servers/{{ admin_server_name }}/security/ owner={{ app_user }} group={{ app_group }}
+- name: Copy Admin Server start-up script
+  template: src=start-admin-server.py dest={{ mw_installer_folder }} owner={{ app_user }} group={{ app_group }} mode=0755
+- name: Execute start Admin Server script
+  shell: "{{ middleware_common_home }}/common/bin/wlst.sh {{ mw_installer_folder }}/start-admin-server.py"
+  become_user: '{{ app_user }}'
+- name: Wait for Admin Server to startup
+  wait_for: port={{ admin_server_port }} delay=2 timeout=120

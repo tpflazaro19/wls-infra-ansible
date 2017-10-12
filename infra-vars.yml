@@ -1,0 +1,33 @@
+# OS user and group
+app_user: 'weblogic'
+app_group: 'oretail'
+
+# Software and configuration main directory
+base_dir: '/opt/app'
+data_dir: '/opt/data'
+stage_dir: '/opt/stage'
+
+# HTTP File Server
+httpfs_url: 'http://52.221.172.172:11000'
+
+# fmw installer
+mw_installer: 'fmw_12.2.1.0.0_infrastructure.jar'
+mw_version: '12.2.1'
+mw_installer_url: '{{ httpfs_url }}/wls/{{ mw_version }}/{{ mw_installer }}'
+
+# database settings for repository
+dbserver_name: 'odb'
+dbserver_port: '1521'
+dbserver_service: 'adfsbx'
+repository_prefix: 'adf'
+
+# Domain Name
+domain_name: 'fc'
+
+# Nodemanager and server settings
+node_manager_listen_port: '5556'
+node_manager_listen_address: 'localhost'
+admin_server_hostname: 'localhost'
+admin_server_port: '7001'
+managed_server_name: 'server_01'
+managed_server_port: '7003'

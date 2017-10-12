@@ -1,0 +1,25 @@
+#==================================================
+# Tasks for fmw-domain Role
+# Setup Node manager
+# Author: Timothy Lazaro
+#==================================================
+
+- name: Copy Nodemanager Properties file
+  template: src=nodemanager.properties dest={{ domain_home }}/nodemanager/ owner={{ app_user }} group={{ app_group }}
+
+# Configure nodemanager startup
+# -----------------------------
+- name: Copy nodemanager systemd script
+  template: src=nodemanager.service dest=/etc/systemd/system/ mode=0664
+- name: Enable nodemanager as linux service
+  command: 'systemctl enable nodemanager'
+  when: ansible_virtualization_type != 'docker'
+- name: Start Node Manager
+  command: 'systemctl start nodemanager'
+  when: ansible_virtualization_type != 'docker'
+- name: Start Node Manager
+  shell: 'cd /tmp; nohup {{ domain_home }}/bin/startNodeManager.sh >/dev/null 2>&1 &'
+  become_user: '{{ app_user }}'
+  when: ansible_virtualization_type == 'docker'
+- name: Waiting for nodemanager to come up
+  wait_for: port={{ node_manager_listen_port }} delay=2 timeout=30

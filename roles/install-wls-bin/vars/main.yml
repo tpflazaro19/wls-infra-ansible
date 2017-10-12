@@ -1,0 +1,4 @@
+# fmw installer
+mw_installer: 'fmw_12.2.1.0.0_infrastructure.jar'
+mw_version: '12.2.1'
+mw_installer_url: '{{ httpfs_url }}/wls/{{ mw_version }}/{{ mw_installer }}'

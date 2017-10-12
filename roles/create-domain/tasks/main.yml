@@ -1,0 +1,30 @@
+#==================================================
+# Tasks for fmw-domain Role
+# Creates a Domain with Fussion Middleware 12.2.1
+# Author: Timothy Lazaro
+#==================================================
+
+# Create Repository in Database
+# -----------------------------
+- name: Copy rcu component list file
+  copy:
+    src: adf.list
+    dest: '{{ stage_dir }}'
+- name: Copy create repository script
+  template: src=repo_manager.sh dest={{ stage_dir }} owner={{ app_user }} group={{ app_group }} mode=0755
+- name: Create repository
+  shell: "{{ stage_dir }}/repo_manager.sh create {{ dbserver_name }}:{{ dbserver_port }}:{{ dbserver_service }} sys {{ sysdba_passwd }} {{ repository_prefix }} {{ datasource_password }} {{ stage_dir }}/adf.list"
+
+# Create new domain
+# -----------------
+- name: Copy create domain python script
+  template: src=create-domain.py dest={{ stage_dir }} owner={{ app_user }} group={{ app_group }}
+  tags: create-domain
+- name: Execute create domain script
+  shell: "{{ middleware_common_home }}/common/bin/wlst.sh {{ stage_dir }}/create-domain.py"
+  tags: create-domain
+
+# Create Environment Variables for Oracle user
+# --------------------------------------------
+- name: Add Oracle Home environment variables
+  lineinfile: dest='/home/{{ app_user }}/.bashrc' line='export ORACLE_HOME={{ middleware_home }}'

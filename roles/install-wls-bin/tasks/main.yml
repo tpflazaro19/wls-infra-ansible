@@ -1,0 +1,30 @@
+#===============================================================================
+# Tasks for install Oracle Fussion Middleware Infrastructure software 12c R2
+# Author: Timothy Lazaro
+#===============================================================================
+
+# Install Fussion Middleware Infrastructure Software
+# --------------------------------------------------
+- name: Download Fusion Middleware Installer
+  get_url: 
+    url: '{{ mw_installer_url }}' 
+    dest: '{{ stage_dir }}'
+    checksum: md5:c8658bb3869bb6a0cebb5805c59588b7
+    force: no
+- name: Copy response file for silent installation
+  template: src=weblogic-infra.rsp dest={{ stage_dir }}
+- name: Copy oraInst.loc
+  template: src=oraInst.loc dest={{ stage_dir }}
+- name: Execute WebLogic installer
+  command: "{{ jdk_folder }}/bin/java -Xms1024m -Xmx1024m -jar {{ stage_dir }}/{{ mw_installer }} -silent -responseFile {{ stage_dir }}/weblogic-infra.rsp -invPtrLoc {{ stage_dir }}/oraInst.loc -ignoreSysPrereqs -novalidation"
+- name: Create script directory for WebLogic
+  file:
+    path: '{{ middleware_home }}/scripts'
+    state: directory
+- name: Copy scripts
+  copy:
+    src: '{{ item }}'
+    dest: '{{ middleware_home }}/scripts'
+    mode: 0755
+  with_fileglob:
+    - "*"

@@ -1,0 +1,28 @@
+---
+- name: Configure Oracle Linux with WebLogic 12c R2 domain
+  hosts: wls
+  become: yes
+  vars_files:
+    # User defined variables for infrastructure
+    - infra-vars.yml
+    # Common properties. You may not delete this
+    - wls-vars.yml
+    # Infrastructure passwords
+    - secrets.yml
+  roles:
+    - role: setup-linux
+      tags: setup
+    - role: install-wls-bin
+      become_user: '{{ app_user }}'
+      tags: install-bin
+    - role: create-domain
+      become_user: '{{ app_user }}'
+      tags: create
+    - role: node-manager
+      tags: nm
+    - role: start-admin-server
+      become_user: '{{ app_user }}'
+      tags: start-admin
+    - role: create-managed-server
+      become_user: '{{ app_user }}'
+      tags: create-ms
